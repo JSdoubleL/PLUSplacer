@@ -76,20 +76,25 @@ def seperate(aln_dict, leaf_dict):
 
     return ref, query
 
-def hamming(seq1, seq2):
+def hamming(seq1, seq2, to_compare=None):
     """ Returns hamming distance between two sequences
     
     Parameters
     ----------
     seq1 : query sequence
     seq2 : reference sequence
+    to_compare : positions in the sequence to compare (None=All)
     
     Returns
     -------
     integer hamming distance between query sequence and reference sequence
     
     """
-    return sum(1 for ch1, ch2 in zip(seq1, seq2) if ch1 != ch2)
+    if len(seq1) != len(seq2):
+        raise Exception("Lengths of two sequences compared are not equal.")
+    if to_compare is None:
+        to_compare = range(len(seq1))
+    return sum(seq1[i] != seq2[i] for i in to_compare)
 
 
 def find_y(x,ref):
@@ -115,7 +120,7 @@ def find_y(x,ref):
     return y
 
 
-def find_closest_hamming(x, ref, n, fragment_flag):
+def find_closest_hamming(x, ref, n, fragment_flag, compare=None):
     ''' Returns leaf name for n closest sister taxa to sequence x
     
     Parameters
@@ -124,7 +129,8 @@ def find_closest_hamming(x, ref, n, fragment_flag):
     ref : reference multiple sequence alignment dictionary 
     n : number of nodes to return 
     fragment_flag : True if the query is not full length
-    
+    compare : number of positions to compare. (None=All)
+
     Returns
     -------
     list of nodes with n smallest hamming distacnes to query sequence
@@ -139,11 +145,16 @@ def find_closest_hamming(x, ref, n, fragment_flag):
         [si, ei] = set_fragment_indicies(x)
     else:
         [si, ei] = [0, len(x)]
-    
-    c = 200 # size of the subtring compared at once
+
+    if compare is not None:
+        ei = min(si + compare, ei)
+
+    to_compare = range(si, ei)
+  
+    c = 200 # size of the substring compared at once
         
     for name, seq in ref.items():
-        heapq.heappush(queue,(hamming(seq[si:si+c],x[si:si+c]), ei - si - c, counter, name))
+        heapq.heappush(queue,(hamming(seq, x, to_compare=to_compare[si:si+c]), ei - si - c, counter, name))
         counter += 1
 
     while queue:
@@ -154,11 +165,11 @@ def find_closest_hamming(x, ref, n, fragment_flag):
                 return closest
         else:
             ind = ei - sites_left
-            new_ham = hamming(ref[name][ind:ind+c],x[ind:ind+c])
+            new_ham = hamming(ref[name], x, to_compare=to_compare[ind:ind+c])
             heapq.heappush(queue,(ham_dist + new_ham, sites_left - c, cnt, name))
 
 def set_fragment_indicies(x):
-    """ Returns the indicees without leading and trailing gaps.
+    """ Returns the indices without leading and trailing gaps.
     
     Parameters
     ----------

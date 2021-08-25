@@ -38,6 +38,7 @@ def main(args):
     q_aln = args.qalignment
     model = args.model
     info = args.info
+    compare = args.compare
 
     # read msa and reference tree
     t0 = time.perf_counter()
@@ -80,13 +81,13 @@ def main(args):
 
         # finds closest sister taxon and subtree leaves
         if subtree_flag == 'h':
-            y = utils.find_closest_hamming(seq, ref_dict, n, frag_flag)
+            y = utils.find_closest_hamming(seq, ref_dict, n, frag_flag, compare)
             labels = []
             for taxon in y:
                labels.append(leaf_dict[taxon].get_label())
             print('Closest sister taxon found: {}'.format(y[0]))
         else:
-            y = utils.find_closest_hamming(seq, ref_dict, 1, frag_flag)
+            y = utils.find_closest_hamming(seq, ref_dict, 1, frag_flag, compare)
             print ('Closest sister taxon found: {}'.format(y[0]))
             print ('{} seconds finding closest leaf'.format(time.perf_counter() - t0))
             node_y = leaf_dict[y[0]]
@@ -226,6 +227,10 @@ def parseArgs():
     parser.add_argument("-f", "--fragmentflag", type=bool,
                         help="boolean, True if queries contain fragments",
                         required=False, default=False)
+
+    parser.add_argument("-c", "--compare", type=int,
+                        help="Integer, compare first c positions of sequences when computing hamming distance. Default is to compare all positions.",
+                        required=False, default=None)
 
     parser.add_argument("-v", "--version", action="version", version="2.0.0", help="show the version number and exit")
                        
