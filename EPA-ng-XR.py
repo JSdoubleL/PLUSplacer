@@ -14,7 +14,7 @@ see https://opensource.org/licenses/MIT
 EPA-ng can be found at: 
 https://github.com/Pbdas/epa-ng
 
-***must be run from the directory containing EPA-ng***
+***EPA-ng must be on path***
 """
 
 
@@ -129,7 +129,7 @@ def main(args):
 
         print ('{} seconds extracting subtree'.format(time.perf_counter() - t0))
         # run EPA-ng-XR from directory containing EPA-ng binaries
-        os.system("./epa-ng -m {} -t {} -w {} -s {} -q {} --redo -T 16".format(info, tmp_tree, tmp_dir, tmp_aln, tmp_qaln))
+        os.system("epa-ng -m {} -t {} -w {} -s {} -q {} --redo -T 16".format(info, tmp_tree, tmp_dir, tmp_aln, tmp_qaln))
 
         print ('{} seconds running epa-ng'.format(time.perf_counter() - t0))
 

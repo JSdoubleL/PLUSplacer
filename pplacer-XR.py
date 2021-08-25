@@ -14,7 +14,7 @@ see https://opensource.org/licenses/MIT
 pplacer can be found at: 
 https://github.com/matsen/pplacer
 
-***must be run from the directory containing pplacer***
+***pplacer must be on path***
 """
 
 import sys
@@ -118,7 +118,7 @@ def main(args):
 
         print ('{} seconds extracting subtree'.format(time.perf_counter() - t0))
         # run EPA-ng-XR from directory containing EPA-ng binaries
-        os.system("./pplacer -m {} -s {} -t {} -o {} {}".format(model, info, tmp_tree, tmp_output, tmp_aln))
+        os.system("pplacer -m {} -s {} -t {} -o {} {}".format(model, info, tmp_tree, tmp_output, tmp_aln))
 
         print ('{} seconds running pplacer'.format(time.perf_counter() - t0))
 
